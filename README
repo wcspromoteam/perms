@@ -1,0 +1,56 @@
+PACKAGE
+
+package perms
+import "."
+
+A simple authentication module that supports user and group based authentication methods, with users authenticated via e-mail addresses.
+In order to use it, you pass a http.Request. In return, you get the user's permissions.
+Permission files are stored in data/shared/(users|groups)/<username>/perms. Each user's group membership is stored in data/shared/users/<username>/groups.
+Currently, the format for the permissions file is something like this:
+   r /
+   rw /profiles/bob/
+   rw /admin/
+Pattern matching is the same as in the HTTP library. A trailing / will match the given path and all subpaths. Longer paths are evaluated before shorter ones.
+
+
+TYPES
+
+type Permissions struct {
+    Read  bool
+    Write bool
+    // Is the user authenticated at all? Aka 1) do they have a session cookie, and 2) have they logged in?
+    Authenticated bool
+    // Is the user recognized by the system? Do they have an account?
+    Recognized bool
+    // What path are these permissions for?
+    Path string
+}
+TODO: Do we want more permissions here?
+
+func Get(r *http.Request) (p *Permissions)
+Basic function that retrieves the permissions a user has based on the contents of their request, including cookies and request path. Designed to be a simple function for most uses. If you want more control, you can use the GetGroupPerms and GetUserPerms functions.
+
+func GetGroupPerms(name, path string) (p *Permissions)
+Retrieves the permissions for all members of a group with the given name.
+
+func GetPerms(r *http.Request) (p *Permissions)
+DEPRECATED! Exists only for compatibility reasons. Can be removed when modules are changed to use the new function.
+
+func GetUserPerms(name, path string) (p *Permissions)
+Retrieves the user permissions, and the user permissions ONLY, for a user with a given name. Does not take group membership into account, and is likely not that useful for this reason.
+
+type PermissionsList []Permissions
+Allows sorting the list of paths for matching.
+
+func (this PermissionsList) Len() int
+
+func (this PermissionsList) Less(i, j int) bool
+
+func (this PermissionsList) Swap(i, j int)
+
+type User struct {
+    Email  string
+    Groups []string
+    Perms  []string
+}
+

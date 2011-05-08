@@ -1,7 +1,7 @@
 PACKAGE
 
 package perms
-import "."
+import "github.com/wcspromoteam/perms"
 
 A simple authentication module that supports user and group based authentication methods, with users authenticated via e-mail addresses.
 In order to use it, you pass a http.Request. In return, you get the user's permissions.

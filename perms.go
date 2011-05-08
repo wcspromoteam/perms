@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"sort"
 	// Local imports
-	"util/session"
+	"github.com/wcspromoteam/session"
 )
 
 // TODO: Do we want more permissions here?
